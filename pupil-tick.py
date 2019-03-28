@@ -1,12 +1,11 @@
 from plugin import Plugin
-import os
-import sys
-from time import time
-import logging
-import zmq
 from pyglui import ui
 from time import time
+import os
+import sys
+import logging
 #import NI module
+import nidaqmx
 
 class PyTick(Plugin):
 	icon_chr = "'"
@@ -19,7 +18,10 @@ class PyTick(Plugin):
 		self.order = 1
 
 		self.count = 0
-		self.start = None
+		self.state = 'stopped'
+		niTask = nidaqmx.Task()
+		niTask.ao_channels.add_ao_voltage_chan('Dev1/ao1')
+		self.niTask = niTask
 
 	def init_ui(self):
 		self.add_menu()
@@ -35,5 +37,21 @@ class PyTick(Plugin):
 		return {}
 
 	def on_notify(self, notification):
-        print(notification['subject'])
+                print(notification['subject'])
+                if notification['subject'] == 'recording.should_start' and self.state == 'stopped':
+                        self.trigger()
+                        self.state == 'started'
+                elif notification['subject'] == 'recording.should_stop' and self.state == 'started':
+                        self.trigger()
+                        self.state = 'stopped'
+                else:
+                     print('Are you nut?!!!')   
+        
+        def trigger(self):
+                self.niTask.write([3.3], auto_start=True)
+                time.sleep(0.002)
+                self.niTask.write([0.0], auto_start=True)
+
+        def cleanup(self):
+                self.niTask.stop()
 
