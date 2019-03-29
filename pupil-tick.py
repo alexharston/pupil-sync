@@ -1,3 +1,4 @@
+from BackgroundTick import BackgroundTick
 from plugin import Plugin
 from pyglui import ui
 from time import time
@@ -5,7 +6,6 @@ import os
 import sys
 import logging
 #import NI module
-import nidaqmx
 
 class PyTick(Plugin):
 	icon_chr = "'"
@@ -17,11 +17,8 @@ class PyTick(Plugin):
 		self.uniqueness = "by_class"
 		self.order = 1
 
-		self.count = 0
 		self.state = 'stopped'
-		niTask = nidaqmx.Task()
-		niTask.ao_channels.add_ao_voltage_chan('Dev1/ao1')
-		self.niTask = niTask
+        self.proxy = CustomTaskProxy('BackgroundTick')
 
 	def init_ui(self):
 		self.add_menu()
@@ -37,21 +34,17 @@ class PyTick(Plugin):
 		return {}
 
 	def on_notify(self, notification):
-                print(notification['subject'])
-                if notification['subject'] == 'recording.should_start' and self.state == 'stopped':
-                        self.trigger()
-                        self.state == 'started'
-                elif notification['subject'] == 'recording.should_stop' and self.state == 'started':
-                        self.trigger()
-                        self.state = 'stopped'
-                else:
-                     print('Are you nut?!!!')   
-        
-        def trigger(self):
-                self.niTask.write([3.3], auto_start=True)
-                time.sleep(0.002)
-                self.niTask.write([0.0], auto_start=True)
+        # print(notification['subject'])
+        if notification['subject'] == 'recording.should_start' and self.state == 'stopped':
+                self.state = 'started'
+                self.proxy.pipe.send('trigger')
+        elif notification['subject'] == 'recording.should_stop' and self.state == 'started':
+                self.state = 'stopped'
+                self.proxy.pipe.send('trigger')
+        else:
+                print('Are you nut?!!!')   
 
         def cleanup(self):
-                self.niTask.stop()
+            self.proxy.pipe.send('stopped')
+            self.proxy.finish()
 
