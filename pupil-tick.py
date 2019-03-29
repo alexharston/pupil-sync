@@ -44,7 +44,7 @@ class PyTick(Plugin):
         else:
                 print('Are you nut?!!!')   
 
-        def cleanup(self):
-            self.proxy.pipe.send('stopped')
-            self.proxy.finish()
+    def cleanup(self):
+        self.proxy.pipe.send('stopped')
+        self.proxy.finish()
 
