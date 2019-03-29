@@ -42,7 +42,8 @@ class PyTick(Plugin):
                 self.state = 'stopped'
                 self.proxy.pipe.send('trigger')
         else:
-                print('Are you nut?!!!')   
+                print('Error - if you are seeing this something has gone \
+			pretty wrong. )   
 
         def cleanup(self):
             self.proxy.pipe.send('stopped')
