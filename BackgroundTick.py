@@ -5,7 +5,7 @@ from time import sleep
 
 class BackgroundTick(Task_Proxy):
 
-    def __init__(self, name, args=(), kwargs={'skipFirst': 0, 'skipFactor': 1}):
+    def __init__(self, name, args=(), kwargs={}):
 	
         super().logger.info('Starting PyTick background thread')
 	self._should_terminate_flag = mp.Value(c_bool, 0)
