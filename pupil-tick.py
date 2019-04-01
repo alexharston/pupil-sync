@@ -157,7 +157,7 @@ class BackgroundTick():
         # logger.debug("Exiting _wrapper")
 
     def fetch(self):
-        print('En Taro Tassadar!')
+        print('Fetched')
 
     def finish(self, timeout=1):
         self.niTask.stop()
