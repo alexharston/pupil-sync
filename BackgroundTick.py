@@ -37,7 +37,7 @@ class BackgroundTick(Task_Proxy):
         logger.debug("Exiting _wrapper")
 
     def fetch(self):
-        print('En Taro Tassadar!')
+        print('Fetched')
 
     def trigger(self, skipFirst, skipFactor):
         for _ in range(skipFirst + skipFactor):
