@@ -1,9 +1,12 @@
 from plugin import Plugin
 from ctypes import c_bool
 from pyglui import ui
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> background
 import os
 import zmq
 import sys
@@ -18,29 +21,46 @@ class PyTick(Plugin):
     icon_chr = "'"
     icon_font="roboto"
 
+<<<<<<< HEAD
     def __init__(self, g_pool):
+=======
+    def __init__(self, g_pool, skipFactor=1, skipFirst=0):
+>>>>>>> background
         super().__init__(g_pool)
 
         self.uniqueness = "by_class"
         self.order = 1
 
         self.state = 'stopped'
+<<<<<<< HEAD
         self.proxy = BackgroundTick('BackgroundTick')
         niTask = nidaqmx.Task()
         niTask.ao_channels.add_ao_voltage_chan('Dev1/ao1')
         self.niTask = niTask
+=======
+        self.proxy = BackgroundTick(
+        'BackgroundTick', kwargs={'skipFactor': skipFactor, 'skipFirst':skipFirst})
+        self.skipFactor = skipFactor
+        self.skipFirst = skipFirst
+>>>>>>> background
 
     def init_ui(self):
         self.add_menu()
         self.menu.label = 'PyTick'
         help_str = "PyTick"
         self.menu.append(ui.Info_Text(help_str))
+<<<<<<< HEAD
+=======
+        # self.menu.append(ui.Text_Input('skipFactor'), self, label='Skip Factor')
+        # self.menu.append(ui.Text_Input('skipFirst'), self, label='Skip First')
+>>>>>>> background
 
     def deinit_ui(self):
         self.remove_menu()
 
 
     def get_init_dict(self):
+<<<<<<< HEAD
         return {}
 
     def on_char(self, character):
@@ -155,6 +175,29 @@ class BackgroundTick():
         
         pipe.close()
         # logger.debug("Exiting _wrapper")
+=======
+        return {'skipFactor': self.skipFactor, 'skipFirst': self.skipFirst}
+    
+    def on_char(self, character):
+        if character is 's':
+            if self.state == 'stopped':
+                self.state = 'started'
+                self.proxy.pipe.send('trigger')
+            else:
+                self.state = 'stopped'
+                self.proxy.pipe.send('trigger')
+
+    def on_notify(self, notification):
+        # print(notification['subject'])
+        if (notification['subject'] == 'recording.should_start') and self.state == 'stopped':
+            self.state = 'started'
+            self.proxy.pipe.send('trigger')
+        elif notification['subject'] == 'recording.should_stop' and self.state == 'started':
+            self.state = 'stopped'
+            self.proxy.pipe.send('trigger')
+        else:
+            print(notification['subject'])
+>>>>>>> background
 
     def fetch(self):
         print('Fetched')
