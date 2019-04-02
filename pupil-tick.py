@@ -10,7 +10,6 @@ import logging
 import zmq_tools
 import multiprocessing as mp
 
-
 class PyTick(Plugin):
     icon_chr = "'"
     icon_font="roboto"
